@@ -11,11 +11,11 @@ const cardSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-    requried: true
-  },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+      requried: true
+    },
   likes: {
     type: [{
       type: mongoose.Schema.Types.ObjectId,
