@@ -20,10 +20,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/users', routerUser)
-app.use('/users/:userId', routerUser)
-
 app.use('/cards', routerCard)
-app.use('/cards/:cardId', routerCard)
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
