@@ -60,12 +60,12 @@ const putLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new Error('Ошибка')
+        throw new Error('Пользователь не найден')
       }
       res.send(card)
     })
     .catch((err) => {
-      if (err.message === 'Ошибка') {
+      if (err.message === 'Пользователь не найден') {
         res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
       }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
@@ -73,7 +73,6 @@ const putLike = (req, res) => {
       }
       res.status(500).send(err)
     })
-  // .catch(err => res.status(500).send({ message: "Произошла ошибка" }))
 }
 
 const deleteLike = (req, res) => {
@@ -83,13 +82,19 @@ const deleteLike = (req, res) => {
     { new: true }
   )
     .then((card) => {
+      if (!card) {
+        throw new Error('Пользователь не найден')
+      }
       res.send(card)
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'Пользователь не найден') {
+        res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
+      }
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
       }
-      res.status(500).send(err.message)
+      res.status(500).send(err)
     })
 }
 
