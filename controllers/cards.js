@@ -50,7 +50,7 @@ const createCard = (req, res) => {
     })
 }
 
-// delete card
+// delete card /
 
 const putLike = (req, res) => {
   Card.findByIdAndUpdate(
