@@ -20,16 +20,17 @@ const getUsers = (req, res) => {
 const getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
-      if (!user) {
-        throw new Error('Запрашиваемый пользователь не найден')
-      }
+      // if (!user) {
+      //   throw new Error('Запрашиваемый пользователь не найден')
+      // }
       res.send(user)
     })
     .catch((err) => {
-      if (err.message === 'Запрашиваемый пользователь не найден') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message })
-      }
-      res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
+      // if (err.message === 'Запрашиваемый пользователь не найден') {
+      //   return res.status(NO_DATA_FOUND).send({ message: err.message })
+      // }
+      // res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
+      res.status(NO_DATA_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
     })
 }
 
