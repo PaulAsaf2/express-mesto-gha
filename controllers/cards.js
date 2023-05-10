@@ -49,7 +49,7 @@ const createCard = (req, res) => {
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
 }
-//
+
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .then((data) => {
