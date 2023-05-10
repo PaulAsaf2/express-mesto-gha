@@ -50,7 +50,24 @@ const createCard = (req, res) => {
     })
 }
 
-// delete card
+const deleteCard = (req, res) => {
+  Card.findByIdAndRemove(req.params.id)
+    .then((data) => {
+      if (!data) {
+        throw new Error('Карточка не найдена')
+      }
+      res.send({ message: 'Карточка удалена' })
+    })
+    .catch((err) => {
+      if (err.message === 'Карточка не найдена') {
+        return res.status(NO_DATA_FOUND).send({ message: err.message })
+      }
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        return res.status(INCORRECT_DATA).send({ message: 'Карточка не найдена' })
+      }
+      res.status(500).send(err)
+    })
+}
 
 const putLike = (req, res) => {
   Card.findByIdAndUpdate(
@@ -66,10 +83,10 @@ const putLike = (req, res) => {
     })
     .catch((err) => {
       if (err.message === 'Пользователь не найден') {
-        res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
+        return res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
       }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
+        return res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
       }
       res.status(500).send(err)
     })
@@ -89,10 +106,10 @@ const deleteLike = (req, res) => {
     })
     .catch((err) => {
       if (err.message === 'Пользователь не найден') {
-        res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
+        return res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
       }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
+        return res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
       }
       res.status(500).send(err)
     })
@@ -103,5 +120,6 @@ module.exports = {
   getCard,
   createCard,
   putLike,
-  deleteLike
+  deleteLike,
+  deleteCard
 }
