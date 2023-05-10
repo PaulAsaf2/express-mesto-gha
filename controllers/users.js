@@ -82,7 +82,6 @@ const updateAvatar = (req, res) => {
       runValidators: true
     })
     .then(user => res.json({user}))
-    // .then(user => res.send(user))
 
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
