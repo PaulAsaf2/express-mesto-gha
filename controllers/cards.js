@@ -59,15 +59,15 @@ const putLike = (req, res) => {
     { new: true }
   )
     .then((card) => {
-      if (!card) {
-        res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
+      if (!req.params.id) {
+        throw new Error('Ошибка')
       }
       res.send(card)
     })
     .catch((err) => {
-      // if () {
-      //   res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
-      // }
+      if (err.message === 'ошибка') {
+        res.status(NO_DATA_FOUND).send({ message: 'Пользователь не найден' })
+      }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
       }
