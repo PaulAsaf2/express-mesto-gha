@@ -50,14 +50,30 @@ const createCard = (req, res) => {
     })
 }
 
+// delete card
+
 const putLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .then(card => res.send(card))
-    .catch(err => res.status(500).send({ message: "Произошла ошибка" }))
+    .then((card) => {
+      // if (req.params.id !== req.user._id) {
+      //   throw new Error('Пользователь не найденО')
+      // }
+      res.send(card)
+    })
+    .catch((err) => {
+      // if (err.name === 'Пользователь не найденО') {
+      //   res.status(NO_DATA_FOUND).send({ message: err.message })
+      // }
+      if (err.name === 'CastError') {
+        res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
+      }
+      res.status(500).send(err.message)
+    })
+  // .catch(err => res.status(500).send({ message: "Произошла ошибка" }))
 }
 
 const deleteLike = (req, res) => {
@@ -66,8 +82,15 @@ const deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .then(card => res.send(card))
-    .catch(err => res.status(500).send({ message: "Произошла ошибка" }))
+    .then((card) => {
+      res.send(card)
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(INCORRECT_DATA).send({ message: 'Пользователь не найден' })
+      }
+      res.status(500).send(err.message)
+    })
 }
 
 module.exports = {

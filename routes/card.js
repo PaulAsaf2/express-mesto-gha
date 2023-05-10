@@ -4,6 +4,7 @@ const { getCards, getCard, createCard, putLike, deleteLike } = require('../contr
 router.get('/', getCards)
 router.get('/:id', getCard)
 router.post('/', createCard)
+// delete
 router.put('/:id/likes', putLike)
 router.delete('/:id/likes', deleteLike)
 
