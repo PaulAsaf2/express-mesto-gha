@@ -83,6 +83,7 @@ const updateAvatar = (req, res) => {
     })
     .then(user => res.json({user}))
     // .then(user => res.send(user))
+
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res.status(INCORRECT_DATA).send({ message: 'Ссылка некорректна' })
