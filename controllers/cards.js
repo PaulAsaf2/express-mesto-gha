@@ -29,6 +29,9 @@ const getCard = (req, res) => {
       if (err.message === 'Запрашиваемая карточка не найдена') {
         return res.status(NO_DATA_FOUND).send({ message: err.message })
       }
+      if (err.name === 'CastError') {
+        return res.status(INCORRECT_DATA).send({ message: 'Запрашиваемая карточка не найдена' })
+      }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
 }

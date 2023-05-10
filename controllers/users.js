@@ -29,6 +29,9 @@ const getUser = (req, res) => {
       if (err.message === 'Запрашиваемый пользователь не найден') {
         return res.status(NO_DATA_FOUND).send({ message: err.message })
       }
+      if (err.name === 'CastError') {
+        return res.status(INCORRECT_DATA).send({ message: 'Запрашиваемый пользователь не найден' })
+      }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
 }
