@@ -3,8 +3,8 @@ const { INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR } = require('../utils/consta
 
 const getCards = (req, res) => {
   Card.find({})
-    .then(cards => res.send(cards))
-    .catch(err => res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' }))
+    .then((cards) => res.send(cards))
+    .catch(() => res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getCard = (req, res) => {
@@ -22,8 +22,8 @@ const getCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для поиска карточки' });
       }
-      res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    })
+      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const createCard = (req, res) => {
@@ -31,13 +31,13 @@ const createCard = (req, res) => {
   const owner = req.user.id;
 
   Card.create({ name, link, owner })
-    .then(card => res.send(card))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании карточки' });
       }
-      res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    })
+      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const deleteCard = (req, res) => {
@@ -55,15 +55,15 @@ const deleteCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для удаления карточки' });
       }
-      res.status(SERVER_ERROR).send(err);
-    })
+      return res.status(SERVER_ERROR).send(err);
+    });
 };
 
 const putLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -78,15 +78,15 @@ const putLike = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки лайка' });
       }
-      res.status(SERVER_ERROR).send(err);
-    })
+      return res.status(SERVER_ERROR).send(err);
+    });
 };
 
 const deleteLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -101,8 +101,8 @@ const deleteLike = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для снятия лайка' });
       }
-      res.status(SERVER_ERROR).send(err);
-    })
+      return res.status(SERVER_ERROR).send(err);
+    });
 };
 
 module.exports = {
@@ -111,5 +111,5 @@ module.exports = {
   createCard,
   putLike,
   deleteLike,
-  deleteCard
+  deleteCard,
 };
