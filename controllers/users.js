@@ -21,16 +21,16 @@ const getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        throw new Error('Запрашиваемый пользователь не найден')
+        throw new Error('Пользователь по указанному _id не найден')
       }
       res.send(user)
     })
     .catch((err) => {
-      if (err.message === 'Запрашиваемый пользователь не найден') {
+      if (err.message === 'Пользователь по указанному _id не найден') {
         return res.status(NO_DATA_FOUND).send({ message: err.message })
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Запрашиваемый пользователь не найден' })
+        return res.status(INCORRECT_DATA).send({ message: 'Пользователь по указанному _id не найден' })
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
@@ -43,7 +43,7 @@ const createUser = (req, res) => {
     .then(user => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Данные пользователя некорректны' })
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании пользователя.' })
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
@@ -62,10 +62,18 @@ const updateUser = (req, res) => {
       new: true,
       runValidators: true
     })
-    .then(user => res.send(user))
+    .then((user) => {
+      if (!user) {
+        throw new Error('Пользователь с указанным _id не найден')
+      }
+      res.send(user)
+    })
     .catch((err) => {
+      if (err.message === 'Пользователь с указанным _id не найден') {
+        return res.status(NO_DATA_FOUND).send({ message: err.message })
+      }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Данные пользователя некорректны' })
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля.' })
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
