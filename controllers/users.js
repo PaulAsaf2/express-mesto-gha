@@ -89,11 +89,18 @@ const updateAvatar = (req, res) => {
       new: true,
       runValidators: true
     })
-    .then(user => res.json({user}))
-
+    .then((user) => {
+      if (!user) {
+        throw new Error('Пользователь с указанным _id не найден')
+      }
+      res.json({ user })
+    })
     .catch((err) => {
+      if (err.message === 'Пользователь с указанным _id не найден') {
+        return res.status(NO_DATA_FOUND).send({ message: err.message })
+      }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Ссылка некорректна' })
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении аватара' })
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' })
     })
