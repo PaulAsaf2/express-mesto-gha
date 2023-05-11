@@ -2,9 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
+const rateLimit = require('express-rate-limit');
 const { NO_DATA_FOUND } = require('./utils/constants');
 const routerUser = require('./routes/users');
 const routerCard = require('./routes/card');
+
+const limiter = rateLimit({
+  windowsMs: 15 * 60 * 1000,
+  max: 100,
+  standartHeaders: true,
+  legacyHeaders: false,
+});
 
 const { PORT = 3000 } = process.env;
 
@@ -25,6 +33,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
+
+app.use(limiter);
 
 app.use((req, res) => {
   res.status(NO_DATA_FOUND).json({ message: 'Страница не найдена' });
