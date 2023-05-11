@@ -3,18 +3,8 @@ const { INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR } = require('../utils/consta
 
 const getCards = (req, res) => {
   Card.find({})
-    .then((cards) => {
-      if (!cards) {
-        throw new Error('Запрашиваемые карточки не найдены');
-      }
-      res.send(cards);
-    })
-    .catch((err) => {
-      if (err.message === 'Запрашиваемые карточки не найдены') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message });
-      }
-      res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    })
+    .then(cards => res.send(cards))
+    .catch(err => res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' }))
 };
 
 const getCard = (req, res) => {
@@ -30,7 +20,7 @@ const getCard = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Запрашиваемая карточка не найдена' });
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для поиска карточки' });
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     })
@@ -62,8 +52,8 @@ const deleteCard = (req, res) => {
       if (err.message === 'Карточка с указанным _id не найдена') {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Карточка с указанным _id не найдена' });
+      if (err.name === 'CastError') {
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для удаления карточки' });
       }
       res.status(SERVER_ERROR).send(err);
     })
@@ -85,7 +75,7 @@ const putLike = (req, res) => {
       if (err.message === 'Передан несуществующий _id карточки') {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки лайка' });
       }
       res.status(SERVER_ERROR).send(err);
@@ -108,7 +98,7 @@ const deleteLike = (req, res) => {
       if (err.message === 'Передан несуществующий _id карточки') {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для снятия лайка' });
       }
       res.status(SERVER_ERROR).send(err);

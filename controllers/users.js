@@ -3,18 +3,8 @@ const { INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR } = require('../utils/consta
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => {
-      if (!users) {
-        throw new Error('Запрашиваемые пользователи не найдены')
-      }
-      res.send(users);
-    })
-    .catch((err) => {
-      if (err.message === 'Запрашиваемые пользователи не найдены') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message })
-      }
-      res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    })
+    .then(users => res.send(users))
+    .catch(err => res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' }))
 };
 
 const getUser = (req, res) => {
@@ -30,7 +20,7 @@ const getUser = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Пользователь по указанному _id не найден' });
+        return res.status(INCORRECT_DATA).send({ message: 'Передан некорректный _id при запросе пользователя' });
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     })
@@ -43,7 +33,7 @@ const createUser = (req, res) => {
     .then(user => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' });
       }
       res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     })
