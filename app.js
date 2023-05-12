@@ -7,6 +7,9 @@ const { NO_DATA_FOUND } = require('./utils/constants');
 const routerUser = require('./routes/users');
 const routerCard = require('./routes/card');
 
+const { PORT = 3000 } = process.env;
+const app = express();
+
 const limiter = rateLimit({
   windowsMs: 15 * 60 * 1000,
   max: 100,
@@ -14,9 +17,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-const { PORT = 3000 } = process.env;
-
-const app = express();
+app.use(limiter);
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
@@ -33,8 +34,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
-
-app.use(limiter);
 
 app.use((req, res) => {
   res.status(NO_DATA_FOUND).json({ message: 'Страница не найдена' });
