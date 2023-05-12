@@ -64,7 +64,7 @@ const updateUser = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
