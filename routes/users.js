@@ -10,3 +10,7 @@ router.patch('/me', updateUser);
 router.patch('/me/avatar', updateAvatar);
 
 module.exports = router;
+
+// POST /signup — регистрация пользователя;
+// POST /signin — авторизация пользователя;
+// GET /users/me — возвращает информацию о текущем пользователе.

@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -20,3 +29,7 @@ const userSchema = new mongoose.Schema({
 }, { versionKey: false });
 
 module.exports = mongoose.model('user', userSchema);
+
+// В схеме пользователя есть обязательные поля email и password
+// Поле email должно быть уникальным — есть опция unique: true
+// Поле password не ограничено в длину, так как пароль хранится в виде хеша
