@@ -1,4 +1,6 @@
+/* eslint-disable max-len */
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -28,8 +30,21 @@ const userSchema = new mongoose.Schema({
   },
 }, { versionKey: false });
 
-module.exports = mongoose.model('user', userSchema);
+userSchema.statics.findUserByCredentials = function (email, password) {
+  return this.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        throw new Error('email не найден, код ошибки 401');
+      }
 
-// В схеме пользователя есть обязательные поля email и password
-// Поле email должно быть уникальным — есть опция unique: true
-// Поле password не ограничено в длину, так как пароль хранится в виде хеша
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new Error('Неверный пароль');
+          }
+
+          return user;
+        });
+    });
+};
+module.exports = mongoose.model('user', userSchema);

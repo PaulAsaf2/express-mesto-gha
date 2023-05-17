@@ -1,11 +1,14 @@
 /* eslint-disable consistent-return */
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+// --------------------------------------------------------
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
@@ -13,7 +16,7 @@ const getUsers = (req, res) => {
       .status(SERVER_ERROR)
       .send({ message: 'Произошла ошибка' }));
 };
-
+// --------------------------------------------------------
 const getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
@@ -34,7 +37,7 @@ const getUser = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-
+// --------------------------------------------------------
 const createUser = (req, res) => {
   const {
     email, password, name, about, avatar,
@@ -74,7 +77,30 @@ const createUser = (req, res) => {
       .status(SERVER_ERROR)
       .send({ message: 'Произошла ошибка' }));
 };
+// --------------------------------------------------------
+const login = (req, res) => {
+  const { email, password } = req.body;
 
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      });
+
+      res.send({ token });
+    })
+    .catch((err) => res
+      .status(SERVER_ERROR)
+      .send({ message: err.message }));
+};
+// --------------------------------------------------------
 const updateUser = (req, res) => {
   const { name, about } = req.body;
 
@@ -107,7 +133,7 @@ const updateUser = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-
+// --------------------------------------------------------
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
@@ -137,11 +163,12 @@ const updateAvatar = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-
+// --------------------------------------------------------
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUser,
   updateAvatar,
+  login,
 };

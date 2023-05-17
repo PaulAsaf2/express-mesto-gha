@@ -1,12 +1,13 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
 const rateLimit = require('express-rate-limit');
-// const validator = require('validator'); // куда его помещать?
 const { NO_DATA_FOUND } = require('./utils/constants');
 const routerUser = require('./routes/users');
 const routerCard = require('./routes/card');
+const routerEnter = require('./routes/enter');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -34,7 +35,10 @@ app.use((req, res, next) => {
 });
 
 app.use('/users', routerUser);
+app.use('/', routerEnter);
 app.use('/cards', routerCard);
+
+console.log(process.env.NODE_ENV);
 
 app.use((req, res) => {
   res.status(NO_DATA_FOUND).json({ message: 'Страница не найдена' });
