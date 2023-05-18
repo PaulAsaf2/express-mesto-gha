@@ -1,8 +1,9 @@
+/* eslint-disable eqeqeq */
 const Card = require('../models/card');
 const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
-
+// --------------------------------------------------------
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
@@ -10,7 +11,7 @@ const getCards = (req, res) => {
       .status(SERVER_ERROR)
       .send({ message: 'Произошла ошибка' }));
 };
-
+// --------------------------------------------------------
 const getCard = (req, res) => {
   Card.findById(req.params.id)
     .then((card) => {
@@ -34,7 +35,7 @@ const getCard = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-
+// --------------------------------------------------------
 const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
@@ -53,31 +54,38 @@ const createCard = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-
+// --------------------------------------------------------
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-    .then((data) => {
-      if (!data) {
-        throw new Error('Карточка с указанным _id не найдена');
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (card.owner != req.user._id) {
+        throw new Error('Карточка с указанным _id другого пользователя');
       }
-      res.send({ message: 'Карточка удалена' });
+      Card.findByIdAndRemove(req.params.id)
+        .then((deletedCard) => {
+          if (!deletedCard) {
+            throw new Error('Карточка с указанным _id не найдена');
+          }
+          res.send({ message: 'Карточка удалена' });
+        })
+        .catch((err) => {
+          if (err.message === 'Карточка с указанным _id не найдена') {
+            return res.status(NO_DATA_FOUND).send({ message: err.message });
+          }
+          if (err.name === 'CastError') {
+            return res
+              .status(INCORRECT_DATA)
+              .send({
+                message:
+                  'Переданы некорректные данные для удаления карточки',
+              });
+          }
+          return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        });
     })
-    .catch((err) => {
-      if (err.message === 'Карточка с указанным _id не найдена') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res
-          .status(INCORRECT_DATA)
-          .send({
-            message:
-              'Переданы некорректные данные для удаления карточки',
-          });
-      }
-      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    });
+    .catch((err) => { res.send({ message: err.message }); });
 };
-
+// --------------------------------------------------------
 const putLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.id,
@@ -105,7 +113,7 @@ const putLike = (req, res) => {
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
-
+// --------------------------------------------------------
 const deleteLike = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.id,
