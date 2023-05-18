@@ -4,8 +4,8 @@ const {
 } = require('../controllers/users');
 
 router.get('/', getUsers);
-router.get('/:id', getUser);
 router.get('/me', getOwner);
+router.get('/:id', getUser);
 router.patch('/me', updateUser);
 router.patch('/me/avatar', updateAvatar);
 

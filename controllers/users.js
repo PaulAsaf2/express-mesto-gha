@@ -39,7 +39,16 @@ const getUser = (req, res) => {
 };
 // --------------------------------------------------------
 const getOwner = (req, res) => {
-  res.send(req.user);
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new Error();
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      res.status(SERVER_ERROR).send(err);
+    });
 };
 // --------------------------------------------------------
 const createUser = (req, res) => {

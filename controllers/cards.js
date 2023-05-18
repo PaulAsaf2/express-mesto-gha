@@ -1,10 +1,14 @@
 const Card = require('../models/card');
-const { INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR } = require('../utils/constants');
+const {
+  INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
+} = require('../utils/constants');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(() => res
+      .status(SERVER_ERROR)
+      .send({ message: 'Произошла ошибка' }));
 };
 
 const getCard = (req, res) => {
@@ -20,7 +24,12 @@ const getCard = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для поиска карточки' });
+        return res
+          .status(INCORRECT_DATA)
+          .send({
+            message:
+              'Переданы некорректные данные для поиска карточки',
+          });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
@@ -28,13 +37,18 @@ const getCard = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-  const owner = req.user.id;
+  const owner = req.user._id;
 
   Card.create({ name, link, owner })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании карточки' });
+        return res
+          .status(INCORRECT_DATA)
+          .send({
+            message:
+              'Переданы некорректные данные при создании карточки',
+          });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
@@ -53,7 +67,12 @@ const deleteCard = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для удаления карточки' });
+        return res
+          .status(INCORRECT_DATA)
+          .send({
+            message:
+              'Переданы некорректные данные для удаления карточки',
+          });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
@@ -76,7 +95,12 @@ const putLike = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки лайка' });
+        return res
+          .status(INCORRECT_DATA)
+          .send({
+            message:
+              'Переданы некорректные данные для постановки лайка',
+          });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
@@ -99,7 +123,9 @@ const deleteLike = (req, res) => {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
       if (err.name === 'CastError') {
-        return res.status(INCORRECT_DATA).send({ message: 'Переданы некорректные данные для снятия лайка' });
+        return res
+          .status(INCORRECT_DATA)
+          .send({ message: 'Переданы некорректные данные для снятия лайка' });
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });

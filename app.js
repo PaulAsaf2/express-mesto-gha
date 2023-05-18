@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routerEnter);
 
-app.use(auth);
+app.use(auth); // статус 401, если не авторизованный
 
 app.use('/users', routerUser);
 app.use('/cards', routerCard);
