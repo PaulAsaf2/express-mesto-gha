@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   name: {
     type: String,
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema({
 }, { versionKey: false });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         throw new Error('email не найден, код ошибки 401');
