@@ -7,7 +7,7 @@ const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { JWT_SECRET } = process.env;
 // --------------------------------------------------------
 const getUsers = (req, res) => {
   User.find({})
@@ -36,6 +36,10 @@ const getUser = (req, res) => {
       }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
+};
+// --------------------------------------------------------
+const getOwner = (req, res) => {
+  res.send(req.user);
 };
 // --------------------------------------------------------
 const createUser = (req, res) => {
@@ -85,16 +89,15 @@ const login = (req, res) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
 
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-      });
-
-      res.send({ token });
+      })
+        .end();
     })
     .catch((err) => res
       .status(SERVER_ERROR)
@@ -167,6 +170,7 @@ const updateAvatar = (req, res) => {
 module.exports = {
   getUsers,
   getUser,
+  getOwner,
   createUser,
   updateUser,
   updateAvatar,
