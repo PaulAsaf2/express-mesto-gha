@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 const validator = require('validator');
+const { isCelebrateError } = require('celebrate');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
@@ -110,7 +111,7 @@ const login = (req, res) => {
       .send({ message: err.message }));
 };
 // --------------------------------------------------------
-const updateUser = (req, res, next) => {
+const updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
@@ -130,13 +131,16 @@ const updateUser = (req, res, next) => {
       }
       res.send(user);
     })
-    .catch(next);
-  // .catch((err) => {
-  //   if (err.message === 'Пользователь с указанным _id не найден') {
-  //     return res.status(NO_DATA_FOUND).send({ message: err.message });
-  //   }
-  //   return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-  // });
+    // .catch(next);
+    .catch((err) => {
+      if (err.message === 'Пользователь с указанным _id не найден') {
+        return res.status(NO_DATA_FOUND).send({ message: err.message });
+      }
+      if (isCelebrateError(err)) {
+        return res.status(409).send({ message: 'Я ошибка от celebrate' });
+      }
+      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+    });
 };
 // --------------------------------------------------------
 const updateAvatar = (req, res) => {
