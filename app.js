@@ -9,13 +9,13 @@ const { NO_DATA_FOUND } = require('./utils/constants');
 const routerUser = require('./routes/users');
 const routerCard = require('./routes/card');
 const routerEnter = require('./routes/enter');
-const auth = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
 const limiter = rateLimit({
-  windowsMs: 15 * 60 * 1000,
+  windowMs: 15 * 60 * 1000,
   max: 100,
   standartHeaders: true,
   legacyHeaders: false,

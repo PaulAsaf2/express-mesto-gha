@@ -1,7 +1,7 @@
 const JWT_SECRET = '71607670afe8d2e70cf1090c45c488be';
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+const auth = (req, res, next) => {
   const token = req.cookies.jwt;
   let payload;
 
@@ -18,4 +18,5 @@ module.exports = (req, res, next) => {
 
 module.exports = {
   JWT_SECRET,
+  auth,
 };
