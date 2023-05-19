@@ -7,7 +7,7 @@ const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET } = require('../middlewares/auth');
 // --------------------------------------------------------
 const getUsers = (req, res) => {
   User.find({})
