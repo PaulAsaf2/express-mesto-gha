@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { errors } = require('celebrate');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -39,5 +40,12 @@ app.use('/cards', routerCard);
 app.use((req, res) => {
   res.status(NO_DATA_FOUND).json({ message: 'Страница не найдена' });
 });
+
+app.use(errors());
+// app.use(errors());
+
+// app.use((err, req, res) => {
+//   res.status(500).json({ message: 'Internal Server Error' });
+// });
 
 app.listen(PORT);
