@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable consistent-return */
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -60,36 +61,77 @@ const createUser = (req, res) => {
     return res.status(INCORRECT_DATA).send({ message: 'Некорректный email' });
   }
 
-  User.findOne({ email })
-    .then((existingUser) => {
-      if (existingUser) {
-        return res
-          .status(409)
-          .send({ message: 'Пользователь с таким email существует' });
-      }
-
-      bcrypt.hash(password, 10)
-        .then((hash) => {
-          User.create({
-            email, password: hash, name, about, avatar,
-          })
-            .then((user) => { res.send(user); })
-            .catch((err) => {
-              if (err.name === 'CastError' || err.name === 'ValidationError') {
-                return res
-                  .status(INCORRECT_DATA)
-                  .send({ message: 'Некорректные данные пользователя' });
-              }
-              return res
-                .status(SERVER_ERROR)
-                .send({ message: 'Произошла ошибка' });
-            });
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      User.create({
+        email, password: hash, name, about, avatar,
+      })
+        .then((user) => { res.send(user); })
+        .catch((err) => {
+          if (err.code === 11000) {
+            return res
+              .status(409)
+              .send({ message: 'Пользователь с таким email существует' });
+          }
+          if (err.name === 'CastError' || err.name === 'ValidationError') {
+            return res
+              .status(INCORRECT_DATA)
+              .send({ message: 'Некорректные данные пользователя' });
+          }
+          return res
+            .status(SERVER_ERROR)
+            .send({ message: 'Произошла ошибка' });
         });
     })
     .catch(() => res
       .status(SERVER_ERROR)
       .send({ message: 'Произошла ошибка' }));
 };
+
+// const createUser = (req, res) => {
+//   const {
+//     email, password, name, about, avatar,
+//   } = req.body;
+
+//   if (!validator.isEmail(email)) {
+//     return res.status(INCORRECT_DATA).send({ message: 'Некорректный email' });
+//   }
+
+//   User.findOne({ email })
+//     .then((existingUser) => {
+//       if (existingUser) {
+//         return res
+//           .status(409)
+//           .send({ message: 'Пользователь с таким email существует' });
+//       }
+
+//       bcrypt.hash(password, 10)
+//         .then((hash) => {
+//           User.create({
+//             email, password: hash, name, about, avatar,
+//           })
+//             .then((user) => { res.send(user); })
+//             .catch((err) => {
+//               if (err.code === 11000) {
+//                 return res
+//                   .status(409)
+//                   .send({ message: 'Пользователь с таким email существует' });
+//               }
+//               if (err.name === 'CastError' || err.name === 'ValidationError') {
+//                 return res
+//                   .status(INCORRECT_DATA)
+//                   .send({ message: 'Некорректные данные пользователя' });
+//               }
+//               return res
+//                 .status(SERVER_ERROR)
+//                 .send({ message: 'Произошла ошибка' });
+//             });
+//         });
+//     })
+//     .catch(() => res
+//       .status(SERVER_ERROR)
+//       .send({ message: 'Произошла ошибка' }));
+// };
 // --------------------------------------------------------
 const login = (req, res) => {
   const { email, password } = req.body;
