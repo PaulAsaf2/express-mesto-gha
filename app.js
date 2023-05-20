@@ -34,8 +34,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routerEnter);
 
-app.use('/users', routerUser);
-app.use('/cards', routerCard);
 app.use('/users', auth, routerUser);
 app.use('/cards', auth, routerCard);
 
