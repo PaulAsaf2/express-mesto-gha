@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 require('dotenv').config();
-const { errors, isCelebrateError } = require('celebrate');
+const { errors } = require('celebrate');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -45,24 +45,18 @@ app.use((req, res) => {
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  if (isCelebrateError(err)) {
-    const errorDetails = err.details.get('body');
-    const errorMessage = errorDetails ? errorDetails.message : 'Validation error';
-    res.status(400).json({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Validation failed',
-      validation: {
-        body: {
-          source: 'body',
-          keys: err.details.keys,
-          message: errorMessage,
-        },
-      },
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
     });
-  } else {
-    next(err);
-  }
+
+  return next();
 });
 
 app.listen(PORT);

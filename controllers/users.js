@@ -1,13 +1,14 @@
 /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 const validator = require('validator');
-const { isCelebrateError } = require('celebrate');
+// const { isCelebrateError } = require('celebrate');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
+const { UnauthorizedError } = require('../errors/unauthorized-error');
 
 const { JWT_SECRET } = require('../middlewares/auth');
 // --------------------------------------------------------
@@ -89,8 +90,27 @@ const createUser = (req, res) => {
       .send({ message: 'Произошла ошибка' }));
 };
 // --------------------------------------------------------
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
+
+  User.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        res.status(401).send(user);
+        // throw new UnauthorizedError('Неверная почта или пароль');
+      }
+
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new UnauthorizedError('Неверная почта или пароль');
+          }
+
+          return user;
+        })
+        .catch(next);
+    })
+    .catch(next);
 
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -106,9 +126,7 @@ const login = (req, res) => {
       })
         .end();
     })
-    .catch((err) => res
-      .status(SERVER_ERROR)
-      .send({ message: err.message }));
+    .catch(next);
 };
 // --------------------------------------------------------
 const updateUser = (req, res) => {
@@ -136,9 +154,9 @@ const updateUser = (req, res) => {
       if (err.message === 'Пользователь с указанным _id не найден') {
         return res.status(NO_DATA_FOUND).send({ message: err.message });
       }
-      if (isCelebrateError(err)) {
-        return res.status(409).send({ message: 'Я ошибка от celebrate' });
-      }
+      // if (isCelebrateError(err)) {
+      //   return res.status(409).send({ message: 'Я ошибка от celebrate' });
+      // }
       return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
