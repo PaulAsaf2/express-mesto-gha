@@ -1,6 +1,6 @@
 class UnauthorizedError extends Error {
-  constructor(mesage) {
-    super(mesage);
+  constructor(message) {
+    super(message);
     this.statusCode = 401;
   }
 }

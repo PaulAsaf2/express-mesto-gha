@@ -3,6 +3,7 @@ const Card = require('../models/card');
 const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
+const Forbidden = require('../errors/forbidden');
 // --------------------------------------------------------
 const getCards = (req, res) => {
   Card.find({})
@@ -55,11 +56,11 @@ const createCard = (req, res) => {
     });
 };
 // --------------------------------------------------------
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (card.owner != req.user._id) {
-        throw new Error('Карточка с указанным _id другого пользователя');
+        throw new Forbidden('Нельзя удалить чужую карточку');
       }
       Card.findByIdAndRemove(req.params.id)
         .then((deletedCard) => {
@@ -83,7 +84,7 @@ const deleteCard = (req, res) => {
           return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
         });
     })
-    .catch((err) => { res.send({ message: err.message }); });
+    .catch(next);
 };
 // --------------------------------------------------------
 const putLike = (req, res) => {

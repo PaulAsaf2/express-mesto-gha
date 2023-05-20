@@ -12,6 +12,7 @@ const routerUser = require('./routes/users');
 const routerCard = require('./routes/card');
 const routerEnter = require('./routes/enter');
 const { auth } = require('./middlewares/auth');
+const handleError = require('./errors/handleError');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -33,30 +34,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routerEnter);
 
-app.use(auth); // статус 401, если не авторизованный
-
-app.use('/users', routerUser);
-app.use('/cards', routerCard);
+app.use('/users', auth, routerUser);
+app.use('/cards', auth, routerCard);
 
 app.use((req, res) => {
   res.status(NO_DATA_FOUND).json({ message: 'Страница не найдена' });
 });
 
+app.listen(PORT);
+
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-
-  return next();
-});
-
-app.listen(PORT);
+app.use(handleError);
