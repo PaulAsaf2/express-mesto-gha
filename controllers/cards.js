@@ -5,36 +5,27 @@ const {
 } = require('../utils/constants');
 const Forbidden = require('../errors/forbidden');
 const NotFoundError = require('../errors/notFound');
+const BadRequest = require('../errors/badRequest');
 // --------------------------------------------------------
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res
-      .status(SERVER_ERROR)
-      .send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 // --------------------------------------------------------
-const getCard = (req, res) => {
+const getCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        throw new Error('Запрашиваемая карточка не найдена');
+        throw new NotFoundError('Запрашиваемая карточка не найдена');
       }
       res.send(card);
     })
     .catch((err) => {
-      if (err.message === 'Запрашиваемая карточка не найдена') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message });
-      }
       if (err.name === 'CastError') {
-        return res
-          .status(INCORRECT_DATA)
-          .send({
-            message:
-              'Переданы некорректные данные для поиска карточки',
-          });
+        return next(new BadRequest('Некорректный id карточки'));
       }
-      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 // --------------------------------------------------------
