@@ -18,12 +18,6 @@ module.exports.signinValidation = celebrate({
   }),
 });
 
-module.exports.getUserByIdValidation = celebrate({
-  params: Joi.object().keys({
-    id: Joi.string().required().pattern(/^[a-z0-9]{24}$/).length(24),
-  }),
-});
-
 module.exports.updateUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
@@ -44,19 +38,7 @@ module.exports.createCardValidation = celebrate({
   }),
 });
 
-module.exports.deleteCardValidation = celebrate({
-  params: Joi.object().keys({
-    id: Joi.string().required().pattern(checkId).length(24),
-  }),
-});
-
-module.exports.putLikeValidation = celebrate({
-  params: Joi.object().keys({
-    id: Joi.string().required().pattern(checkId).length(24),
-  }),
-});
-
-module.exports.deleteLikeValidation = celebrate({
+module.exports.idValidation = celebrate({
   params: Joi.object().keys({
     id: Joi.string().required().pattern(checkId).length(24),
   }),
