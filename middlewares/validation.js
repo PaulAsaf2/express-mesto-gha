@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const { checkURL, checkId } = require('../utils/constants');
+const { checkURL } = require('../utils/constants');
 
 module.exports.signupValidation = celebrate({
   body: Joi.object().keys({
@@ -40,6 +40,6 @@ module.exports.createCardValidation = celebrate({
 
 module.exports.idValidation = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().pattern(checkId).length(24),
+    id: Joi.string().required().hex().length(24),
   }),
 });
