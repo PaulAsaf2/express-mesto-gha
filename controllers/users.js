@@ -130,15 +130,17 @@ const updateAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному id не найден');
+        return next(
+          new NotFoundError('Пользователь по указанному id не найден'),
+        );
       }
-      res.json({ user });
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректная ссылка'));
+        return next(new BadRequest('Некорректный id пользователя'));
       }
-      next(err);
+      return next(err);
     });
 };
 // --------------------------------------------------------
