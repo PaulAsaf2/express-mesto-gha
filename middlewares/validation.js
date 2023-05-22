@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const { checkURL } = require('../utils/constants');
+const { checkURL, checkId } = require('../utils/constants');
 
 module.exports.signupValidation = celebrate({
   body: Joi.object().keys({
@@ -34,5 +34,30 @@ module.exports.updateUserValidation = celebrate({
 module.exports.updateAvatarValidation = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().required().pattern(checkURL),
+  }),
+});
+
+module.exports.createCardValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().pattern(checkURL),
+  }),
+});
+
+module.exports.deleteCardValidation = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().required().pattern(checkId).length(24),
+  }),
+});
+
+module.exports.putLikeValidation = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().required().pattern(checkId).length(24),
+  }),
+});
+
+module.exports.deleteLikeValidation = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().required().pattern(checkId).length(24),
   }),
 });
