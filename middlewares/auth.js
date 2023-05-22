@@ -10,9 +10,7 @@ const auth = async (req, res, next) => {
     payload = await jwt.verify(token, JWT_SECRET);
     req.user = payload;
   } catch {
-    next(new UnauthorizedError(
-      'Недостаточно прав. Сперва войдите в аккаунт',
-    ));
+    throw new UnauthorizedError('Недостаточно прав. Сперва войдите в аккаунт');
   }
 
   return next();
