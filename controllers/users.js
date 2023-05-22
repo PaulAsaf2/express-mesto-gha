@@ -63,13 +63,13 @@ const login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Неверная почта или пароль');
+        return next(new UnauthorizedError('Неверная почта или пароль'));
       }
 
-      bcrypt.compare(password, user.password)
+      return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new UnauthorizedError('Неверная почта или пароль');
+            return next(new UnauthorizedError('Неверная почта или пароль'));
           }
 
           const token = jwt.sign(
@@ -78,7 +78,7 @@ const login = (req, res, next) => {
             { expiresIn: '7d' },
           );
 
-          res.cookie('jwt', token, {
+          return res.cookie('jwt', token, {
             maxAge: 3600000 * 24 * 7,
             httpOnly: true,
           });
