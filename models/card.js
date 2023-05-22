@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { checkURL } = require('../utils/constants');
 
 const cardSchema = mongoose.Schema({
   name: {
@@ -9,6 +10,7 @@ const cardSchema = mongoose.Schema({
   },
   link: {
     type: String,
+    match: [checkURL, 'Некорректная ссылка'],
     required: true,
   },
   owner: {
