@@ -1,4 +1,3 @@
-/* eslint-disable eqeqeq */
 const Card = require('../models/card');
 const Forbidden = require('../errors/forbidden');
 const NotFoundError = require('../errors/notFound');
@@ -79,8 +78,8 @@ const deleteLike = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new BadRequest(
-          'Переданы некорректные данные для снятия лайка',
+        return next(
+          new BadRequest('Переданы некорректные данные для снятия лайка'),
         );
       }
       return next(err);
