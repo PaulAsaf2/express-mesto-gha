@@ -10,22 +10,6 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 // --------------------------------------------------------
-const getCard = (req, res, next) => {
-  Card.findById(req.params.id)
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
-      }
-      res.send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректный id карточки'));
-      }
-      return next(err);
-    });
-};
-// --------------------------------------------------------
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
@@ -106,7 +90,6 @@ const deleteLike = (req, res, next) => {
 
 module.exports = {
   getCards,
-  getCard,
   createCard,
   putLike,
   deleteLike,
