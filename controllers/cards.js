@@ -29,7 +29,7 @@ const getCard = (req, res, next) => {
     });
 };
 // --------------------------------------------------------
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -37,14 +37,11 @@ const createCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return res
-          .status(INCORRECT_DATA)
-          .send({
-            message:
-              'Переданы некорректные данные при создании карточки',
-          });
+        return new BadRequest(
+          'Переданы некорректные данные при создании карточки',
+        );
       }
-      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 // --------------------------------------------------------
