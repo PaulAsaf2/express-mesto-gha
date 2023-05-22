@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 require('dotenv').config();
 const { errors } = require('celebrate');
 const express = require('express');
