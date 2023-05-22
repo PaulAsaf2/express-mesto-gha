@@ -9,8 +9,14 @@ router.get(
   '/',
   getUsers,
 );
+
 router.get(
-  ['/me', '/:id'],
+  '/me',
+  getUser,
+);
+
+router.get(
+  '/:id',
   celebrate({
     params: Joi.object().keys({
       id: Joi.string().required().pattern(/^[a-z0-9]{24}$/).length(24),
@@ -18,12 +24,14 @@ router.get(
   }),
   getUser,
 );
+
 router.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
   }),
 }), updateUser);
+
 router.patch(
   '/me/avatar',
   celebrate({
