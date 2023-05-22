@@ -17,12 +17,12 @@ router.patch('/me', celebrate({
 }), updateUser);
 router.patch(
   '/me/avatar',
-  // celebrate({
-  //   body: Joi.object().keys({
-  //     avatar: Joi
-  //       .string().required(),
-  //   }),
-  // }),
+  celebrate({
+    body: Joi.object().keys({
+      avatar: Joi
+        .string().required().pattern(/(https?:\/\/)(w{3}\.)?\w+[-.~:/?#[\]@!$&'()*+,;=]*#?/),
+    }),
+  }),
   updateAvatar,
 );
 
