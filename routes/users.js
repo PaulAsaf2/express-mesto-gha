@@ -1,45 +1,15 @@
-/* eslint-disable max-len */
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUser, updateUser, updateAvatar,
 } = require('../controllers/users');
+const {
+  getUserByIdValidation, updateUserValidation, updateAvatarValidation,
+} = require('../middlewares/validation');
 
-router.get(
-  '/',
-  getUsers,
-);
-
-router.get(
-  '/me',
-  getUser,
-);
-
-router.get(
-  '/:id',
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().required().pattern(/^[a-z0-9]{24}$/).length(24),
-    }),
-  }),
-  getUser,
-);
-
-router.patch('/me', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-  }),
-}), updateUser);
-
-router.patch(
-  '/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?\w+[-.~:/?#[\]@!$&'()*+,;=]*#?/),
-    }),
-  }),
-  updateAvatar,
-);
+router.get('/', getUsers);
+router.get('/me', getUser);
+router.get('/:id', getUserByIdValidation, getUser);
+router.patch('/me', updateUserValidation, updateUser);
+router.patch('/me/avatar', updateAvatarValidation, updateAvatar);
 
 module.exports = router;

@@ -17,3 +17,22 @@ module.exports.signinValidation = celebrate({
     password: Joi.string().required(),
   }),
 });
+
+module.exports.getUserByIdValidation = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().required().pattern(/^[a-z0-9]{24}$/).length(24),
+  }),
+});
+
+module.exports.updateUserValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+  }),
+});
+
+module.exports.updateAvatarValidation = celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().required().pattern(checkURL),
+  }),
+});
