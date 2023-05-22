@@ -6,12 +6,13 @@ const bodyParser = require('body-parser');
 const process = require('process');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-const { NO_DATA_FOUND, mongoDBPath } = require('./utils/constants');
+const { mongoDBPath } = require('./utils/constants');
 const routerUser = require('./routes/users');
 const routerCard = require('./routes/cards');
 const routerEnter = require('./routes/enter');
 const { auth } = require('./middlewares/auth');
 const handleError = require('./errors/handleError');
+const NotFoundError = require('./errors/notFound');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -36,9 +37,9 @@ app.use('/', routerEnter);
 app.use('/users', auth, routerUser);
 app.use('/cards', auth, routerCard);
 
-app.use((req, res) => {
-  res.status(NO_DATA_FOUND).json({ message: 'Страница не найдена' });
-});
+app.all('*', auth, (req, res, next) => next(
+  new NotFoundError('Страницы не существует'),
+));
 
 app.listen(PORT);
 
