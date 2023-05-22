@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { createUser, login } = require('../controllers/users');
@@ -17,7 +18,7 @@ router.post(
 );
 router.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
+    email: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?\w+[-.~:/?#[\]@!$&'()*+,;=]*#?/),
     password: Joi.string().required(),
   }),
 }), login);
