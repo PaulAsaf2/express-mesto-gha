@@ -111,9 +111,9 @@ const updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректные данные пользователя'));
+        return next(new BadRequest('Некорректный id пользователя'));
       }
-      next(err);
+      return next(err);
     });
 };
 // --------------------------------------------------------
