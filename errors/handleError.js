@@ -1,18 +1,11 @@
-// const BadRequest = require('./badRequest');
+const { SERVER_ERROR } = require('../utils/constants');
 
 const handleError = ((err, req, res, next) => {
-  // if (err.name === 'CastError') {
-  //   const a = new BadRequest('Некорректный id пользователя');
-  //   res.status(a.statusCode).send({ message: a.message });
-  // }
-
-  res.status(err.statusCode).send({ message: err.message });
-
-  // res.send({
-  //   name: err.name,
-  //   message: err.message,
-  //   stack: err.stack,
-  // });
+  if (err.statusCode) {
+    res.status(err.statusCode).send({ message: err.message });
+  } else {
+    res.status(SERVER_ERROR).send({ message: 'Ошибка на сервере' });
+  }
 
   return next();
 });
