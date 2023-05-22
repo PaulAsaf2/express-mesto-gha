@@ -18,8 +18,8 @@ const createCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return new BadRequest(
-          'Переданы некорректные данные при создании карточки',
+        return next(
+          new BadRequest('Переданы некорректные данные при создании карточки'),
         );
       }
       return next(err);
@@ -30,13 +30,13 @@ const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным id не найдена');
+        return next(new NotFoundError('Карточка с указанным id не найдена'));
       }
-      if (card.owner != req.user._id) {
-        throw new Forbidden('Нельзя удалить чужую карточку');
+      if (card.owner.toString() !== req.user._id) {
+        return next(new Forbidden('Нельзя удалить чужую карточку'));
       }
 
-      Card.deleteOne(card)
+      return Card.deleteOne({ _id: card._id })
         .then(() => res.send({ message: 'Карточка удалена' }))
         .catch(next);
     })
@@ -51,14 +51,14 @@ const putLike = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
+        throw next(new NotFoundError('Передан несуществующий _id карточки'));
       }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new BadRequest(
-          'Переданы некорректные данные для постановки лайка',
+        return next(
+          new BadRequest('Переданы некорректные данные для постановки лайка'),
         );
       }
       return next(err);
