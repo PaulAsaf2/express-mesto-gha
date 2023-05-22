@@ -5,7 +5,7 @@ const {
   getUsers, getUser, updateUser, updateAvatar,
 } = require('../controllers/users');
 
-const validateURL = '^((http|https)://)[-a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)$';
+// const validateURL = '^((http|https)://)[-a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)$';
 
 router.get('/', getUsers);
 router.get(['/me', '/:id'], getUser);
@@ -15,11 +15,15 @@ router.patch('/me', celebrate({
     about: Joi.string().required().min(2).max(30),
   }),
 }), updateUser);
-router.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi
-      .string().required().regExp(validateURL),
-  }),
-}), updateAvatar);
+router.patch(
+  '/me/avatar',
+  // celebrate({
+  //   body: Joi.object().keys({
+  //     avatar: Joi
+  //       .string().required(),
+  //   }),
+  // }),
+  updateAvatar,
+);
 
 module.exports = router;
