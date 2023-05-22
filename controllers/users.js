@@ -46,7 +46,15 @@ const createUser = (req, res, next) => {
       User.create({
         email, password: hash, name, about, avatar,
       })
-        .then((user) => { res.send(user); })
+        .then((user) => {
+          res.send({
+            email: user.email,
+            password: user.password,
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+          });
+        })
         .catch((err) => {
           if (err.code === 11000) {
             return next(new ConflictError('Пользователь с таким email существует'));
@@ -64,7 +72,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findOne({ email })
-    // .select('+password')
+    .select('+password')
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError('Неверная почта или пароль');
