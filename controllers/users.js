@@ -1,6 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable consistent-return */
-const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
@@ -20,26 +17,19 @@ const getUser = (req, res, next) => {
   User.findById(req.params.id || req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному id не найден');
+        return next(
+          new NotFoundError('Пользователь по указанному id не найден'),
+        );
       }
-      res.send(user);
+      return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequest('Некорректный id пользователя'));
-      }
-      next(err);
-    });
+    .catch(next);
 };
 // --------------------------------------------------------
 const createUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
-
-  if (!validator.isEmail(email)) {
-    throw new BadRequest('Некорректный email');
-  }
 
   bcrypt.hash(password, 10)
     .then((hash) => {
