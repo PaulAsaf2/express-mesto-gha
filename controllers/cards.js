@@ -63,7 +63,7 @@ const deleteCard = (req, res, next) => {
     .catch(next);
 };
 // --------------------------------------------------------
-const putLike = (req, res) => {
+const putLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } },
@@ -71,23 +71,17 @@ const putLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new Error('Передан несуществующий _id карточки');
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
       res.send(card);
     })
     .catch((err) => {
-      if (err.message === 'Передан несуществующий _id карточки') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message });
-      }
       if (err.name === 'CastError') {
-        return res
-          .status(INCORRECT_DATA)
-          .send({
-            message:
-              'Переданы некорректные данные для постановки лайка',
-          });
+        return new BadRequest(
+          'Переданы некорректные данные для постановки лайка',
+        );
       }
-      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 // --------------------------------------------------------
