@@ -47,13 +47,7 @@ const createUser = (req, res, next) => {
         email, password: hash, name, about, avatar,
       })
         .then((user) => {
-          res.send({
-            email: user.email,
-            password: user.password,
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-          });
+          res.send(user); // через проверку Postman пароль содержится в ответе
         })
         .catch((err) => {
           if (err.code === 11000) {

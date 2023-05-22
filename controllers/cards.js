@@ -4,6 +4,7 @@ const {
   INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
 const Forbidden = require('../errors/forbidden');
+const NotFoundError = require('../errors/notFound');
 // --------------------------------------------------------
 const getCards = (req, res) => {
   Card.find({})
@@ -59,30 +60,17 @@ const createCard = (req, res) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
-      if (card.owner != req.user._id) {
-        throw new Forbidden('Нельзя удалить чужую карточку');
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
-      Card.findByIdAndRemove(req.params.id)
-        .then((deletedCard) => {
-          if (!deletedCard) {
-            throw new Error('Карточка с указанным _id не найдена');
+      Card.deleteOne(card)
+        .then(() => {
+          if (card.owner != req.user._id) {
+            throw new Forbidden('Нельзя удалить чужую карточку');
           }
           res.send({ message: 'Карточка удалена' });
         })
-        .catch((err) => {
-          if (err.message === 'Карточка с указанным _id не найдена') {
-            return res.status(NO_DATA_FOUND).send({ message: err.message });
-          }
-          if (err.name === 'CastError') {
-            return res
-              .status(INCORRECT_DATA)
-              .send({
-                message:
-                  'Переданы некорректные данные для удаления карточки',
-              });
-          }
-          return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
-        });
+        .catch(next);
     })
     .catch(next);
 };
