@@ -73,9 +73,9 @@ const deleteLike = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
+        return next(new NotFoundError('Передан несуществующий _id карточки'));
       }
-      res.send(card);
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
