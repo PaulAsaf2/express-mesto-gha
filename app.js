@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const process = require('process');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-const { NO_DATA_FOUND } = require('./utils/constants');
+const { NO_DATA_FOUND, mongoDBPath } = require('./utils/constants');
 const routerUser = require('./routes/users');
 const routerCard = require('./routes/cards');
 const routerEnter = require('./routes/enter');
@@ -26,7 +26,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(cookieParser());
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect(mongoDBPath);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
