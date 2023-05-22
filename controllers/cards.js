@@ -1,8 +1,5 @@
 /* eslint-disable eqeqeq */
 const Card = require('../models/card');
-const {
-  INCORRECT_DATA, NO_DATA_FOUND, SERVER_ERROR,
-} = require('../utils/constants');
 const Forbidden = require('../errors/forbidden');
 const NotFoundError = require('../errors/notFound');
 const BadRequest = require('../errors/badRequest');
@@ -85,7 +82,7 @@ const putLike = (req, res, next) => {
     });
 };
 // --------------------------------------------------------
-const deleteLike = (req, res) => {
+const deleteLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
@@ -93,20 +90,17 @@ const deleteLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new Error('Передан несуществующий _id карточки');
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
       res.send(card);
     })
     .catch((err) => {
-      if (err.message === 'Передан несуществующий _id карточки') {
-        return res.status(NO_DATA_FOUND).send({ message: err.message });
-      }
       if (err.name === 'CastError') {
-        return res
-          .status(INCORRECT_DATA)
-          .send({ message: 'Переданы некорректные данные для снятия лайка' });
+        return new BadRequest(
+          'Переданы некорректные данные для снятия лайка',
+        );
       }
-      return res.status(SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 
