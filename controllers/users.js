@@ -46,12 +46,11 @@ const createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.code === 11000) {
-            return next(new ConflictError('Пользователь с таким email существует'));
+            return next(
+              new ConflictError('Пользователь с таким email существует'),
+            );
           }
-          if (err.name === 'CastError') {
-            return next(new BadRequest('Некорректные данные пользователя'));
-          }
-          next(err);
+          return next(err);
         });
     })
     .catch(next);
